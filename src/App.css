@@ -26,7 +26,6 @@ body {
 .apple {
   width: 5%;
   height: 5%;
-  background-color: white;
   position: absolute;
   padding-top: 8px;
   z-index: 1;

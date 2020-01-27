@@ -99,16 +99,13 @@ export default class App extends Component {
     const direction = this.state.direction;
 
     if (x === apple[0] && y === apple[1]) {
-      let newPieceX = x;
-      let newPieceY = y;
-
-      if (direction === "UP") y++;
-      if (direction === "DOWN") y--;
+      if (direction === "UP") y--;
+      if (direction === "DOWN") y++;
       if (direction === "LEFT") x--;
       if (direction === "RIGHT") x++;
 
       this.getNewApple();
-      return [newPieceX, newPieceY];
+      return [x, y];
     } else {
       return false;
     }
@@ -125,7 +122,7 @@ export default class App extends Component {
   stopSnake = () => {
     clearInterval(this.state.intervalId);
   };
-  
+
   startGame = () => {
     const initialState = {
       direction: null,
@@ -138,7 +135,7 @@ export default class App extends Component {
     this.setState(initialState);
 
     window.addEventListener("keydown", this.keyListener);
-    const intervalId = setInterval(this.snakeRun, 300);
+    const intervalId = setInterval(this.snakeRun, 200);
     this.setState({ intervalId });
   };
 
