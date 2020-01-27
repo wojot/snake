@@ -41,22 +41,6 @@ export default class App extends Component {
     }
   };
 
-  startGame = () => {
-    const initialState = {
-      direction: null,
-      snakeCoords: [
-        [1, 1],
-        [2, 1]
-      ],
-      appleCoords: this.getRandom()
-    };
-    this.setState(initialState);
-
-    window.addEventListener("keydown", this.keyListener);
-    const intervalId = setInterval(this.snakeRun, 300);
-    this.setState({ intervalId });
-  };
-
   snakeRun = () => {
     console.log(this.state); ////////////////////////////////////////////////////////////////////////////////////////////////
     const direction = this.state.direction;
@@ -130,6 +114,34 @@ export default class App extends Component {
     }
   };
 
+  getNewApple = () => {
+    this.setState({ appleCoords: this.getRandom() });
+  };
+
+  getRandom = () => {
+    return [Math.floor(Math.random() * 20), Math.floor(Math.random() * 20)];
+  };
+
+  stopSnake = () => {
+    clearInterval(this.state.intervalId);
+  };
+  
+  startGame = () => {
+    const initialState = {
+      direction: null,
+      snakeCoords: [
+        [1, 1],
+        [2, 1]
+      ],
+      appleCoords: this.getRandom()
+    };
+    this.setState(initialState);
+
+    window.addEventListener("keydown", this.keyListener);
+    const intervalId = setInterval(this.snakeRun, 300);
+    this.setState({ intervalId });
+  };
+
   gameOver = msg => {
     this.stopSnake();
     confirmAlert({
@@ -141,18 +153,6 @@ export default class App extends Component {
         }
       ]
     });
-  };
-
-  stopSnake = () => {
-    clearInterval(this.state.intervalId);
-  };
-
-  getNewApple = () => {
-    this.setState({ appleCoords: this.getRandom() });
-  };
-
-  getRandom = () => {
-    return [Math.floor(Math.random() * 20), Math.floor(Math.random() * 20)];
   };
 
   render() {
