@@ -1,11 +1,17 @@
 import React, { Component } from "react";
 import "./App.css";
 import Snake from "./components/Snake";
+import Apple from "./components/Apple";
 import { confirmAlert } from "react-confirm-alert";
 import "react-confirm-alert/src/react-confirm-alert.css";
 
 export default class App extends Component {
-  state = { direction: null, snakeCoords: [], intervalId: null };
+  state = {
+    direction: null,
+    snakeCoords: [],
+    appleCoords: [],
+    intervalId: null
+  };
 
   componentDidMount() {
     this.startGame();
@@ -30,6 +36,8 @@ export default class App extends Component {
       this.state.direction !== "RIGHT"
     ) {
       this.setState({ direction: "LEFT" });
+    } else if (keyCode === 27) {
+      this.stopSnake();
     }
   };
 
@@ -39,7 +47,8 @@ export default class App extends Component {
       snakeCoords: [
         [1, 1],
         [2, 1]
-      ]
+      ],
+      appleCoords: this.getRandom()
     };
     this.setState(initialState);
 
@@ -49,38 +58,44 @@ export default class App extends Component {
   };
 
   snakeRun = () => {
-    console.log(this.state);
+    console.log(this.state); ////////////////////////////////////////////////////////////////////////////////////////////////
     const direction = this.state.direction;
     if (direction) {
       let coords = this.state.snakeCoords;
+      const head = coords[coords.length - 1];
+      const newEatenCoord = this.isSnakeEating(head[0], head[1]);
 
-      let newCoords = coords.map((piece, index, oryginalArr) => {
-        let x = piece[0];
-        let y = piece[1];
-        const direction = this.state.direction;
-        const head = index === oryginalArr.length - 1;
+      if (newEatenCoord) {
+        this.setState({ snakeCoords: [...coords, newEatenCoord] });
+      } else {
+        let newCoords = coords.map((piece, index, oryginalArr) => {
+          let x = piece[0];
+          let y = piece[1];
+          const direction = this.state.direction;
+          const head = index === oryginalArr.length - 1;
 
-        if (head && !this.isSnakeInArea(x, y)) {
-          this.gameOver("Snake is beyond area!");
-        } else {
-          if (head) {
-            if (direction === "UP") {
-              y -= 1;
-            } else if (direction === "RIGHT") {
-              x += 1;
-            } else if (direction === "DOWN") {
-              y += 1;
-            } else if (direction === "LEFT") {
-              x -= 1;
-            }
+          if (head && !this.isSnakeInArea(x, y)) {
+            this.gameOver("Snake is beyond area!");
           } else {
-            [x, y] = oryginalArr[index + 1];
+            if (head) {
+              if (direction === "UP") {
+                y -= 1;
+              } else if (direction === "RIGHT") {
+                x += 1;
+              } else if (direction === "DOWN") {
+                y += 1;
+              } else if (direction === "LEFT") {
+                x -= 1;
+              }
+            } else {
+              [x, y] = oryginalArr[index + 1];
+            }
           }
-        }
 
-        return [x, y];
-      });
-      this.setState({ snakeCoords: newCoords });
+          return [x, y];
+        });
+        this.setState({ snakeCoords: [...newCoords] });
+      }
     }
   };
 
@@ -88,16 +103,35 @@ export default class App extends Component {
     const max = 20;
     const min = 0;
     const direction = this.state.direction;
-    if (direction === "UP" && y < min+1) return false;
-    if (direction === "DOWN" && y > max-2) return false;
-    if (direction === "LEFT" && x < min+1) return false;
-    if (direction === "RIGHT" && x > max-2) return false;
+    if (direction === "UP" && y < min + 1) return false;
+    if (direction === "DOWN" && y > max - 2) return false;
+    if (direction === "LEFT" && x < min + 1) return false;
+    if (direction === "RIGHT" && x > max - 2) return false;
     return true;
-    // return x >= 0 && x < 20 && y >= 0 && y < 20 ? true : false;
+  };
+
+  isSnakeEating = (x, y) => {
+    const apple = this.state.appleCoords;
+    const direction = this.state.direction;
+
+    if (x === apple[0] && y === apple[1]) {
+      let newPieceX = x;
+      let newPieceY = y;
+
+      if (direction === "UP") y++;
+      if (direction === "DOWN") y--;
+      if (direction === "LEFT") x--;
+      if (direction === "RIGHT") x++;
+
+      this.getNewApple();
+      return [newPieceX, newPieceY];
+    } else {
+      return false;
+    }
   };
 
   gameOver = msg => {
-    clearInterval(this.state.intervalId);
+    this.stopSnake();
     confirmAlert({
       title: msg + " Would you like to play again?",
       buttons: [
@@ -109,11 +143,26 @@ export default class App extends Component {
     });
   };
 
+  stopSnake = () => {
+    clearInterval(this.state.intervalId);
+  };
+
+  getNewApple = () => {
+    this.setState({ appleCoords: this.getRandom() });
+  };
+
+  getRandom = () => {
+    return [Math.floor(Math.random() * 20), Math.floor(Math.random() * 20)];
+  };
+
   render() {
     return (
       <div className="container">
-      <h1 style={{color:"rgb(235, 235, 235)"}}>Score: {this.state.snakeCoords.length}</h1>
+        <h1 style={{ color: "rgb(235, 235, 235)" }}>
+          Score: {this.state.snakeCoords.length}
+        </h1>
         <Snake snakeCoords={this.state.snakeCoords} />
+        <Apple appleCoords={this.state.appleCoords} />
       </div>
     );
   }
