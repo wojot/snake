@@ -42,12 +42,14 @@ export default class App extends Component {
   };
 
   snakeRun = () => {
-    console.log(this.state); ////////////////////////////////////////////////////////////////////////////////////////////////
     const direction = this.state.direction;
     if (direction) {
       let coords = this.state.snakeCoords;
       const head = coords[coords.length - 1];
       const newEatenCoord = this.isSnakeEating(head[0], head[1]);
+      if (this.isSnakeHaveAnAccidentWithItself()) {
+        this.gameOver("You crashed yourself!")
+      }
 
       if (newEatenCoord) {
         this.setState({ snakeCoords: [...coords, newEatenCoord] });
@@ -109,6 +111,23 @@ export default class App extends Component {
     } else {
       return false;
     }
+  };
+
+  isSnakeHaveAnAccidentWithItself = () => {
+    let coords = this.state.snakeCoords;
+    return coords
+      .map((coord, index, oryginalArr) => {
+        if (
+          coord[0] === oryginalArr[oryginalArr.length - 1][0] &&
+          coord[1] === oryginalArr[oryginalArr.length - 1][1] &&
+          index !== oryginalArr.length - 1
+        ) {
+          return true;
+        } else {
+          return false;
+        }
+      })
+      .includes(true);
   };
 
   getNewApple = () => {

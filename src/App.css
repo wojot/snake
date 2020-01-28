@@ -3,7 +3,7 @@ body {
 }
 
 .container {
-  outline: solid 3px rgb(76, 76, 76);
+  border: solid 4px rgb(76, 76, 76);
   background-color: white;
   width: 500px;
   height: 500px;
