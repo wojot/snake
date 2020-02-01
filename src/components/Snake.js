@@ -1,20 +1,16 @@
-import React, { Component } from "react";
+import React from "react";
 
-export default class Snake extends Component {
-  render() {
-    return (
-      <div>
-        {this.props.snakeCoords.map((coord, index) => {
-          const x = coord[0] * 5;
-          const y = coord[1] * 5;
-          const style = {
-            left: `${x}%`,
-            top: `${y}%`
-          };
+export default function Snake({ snakeCoords }) {
+  return (
+    <div>
+      {snakeCoords.map((coord, index) => {
+        const style = {
+          left: coord[0] * 5 + "%",
+          top: coord[1] * 5 + "%"
+        };
 
-          return <div key={index} className="snakePiece" style={style}></div>;
-        })}
-      </div>
-    );
-  }
+        return <div key={index} className="snakePiece" style={style}></div>;
+      })}
+    </div>
+  );
 }
